@@ -5,7 +5,7 @@ Some devices, like home EV chargers from Alfen or Peblar can use data from your 
 
 * Edit `docker_compose.yaml`:
   * add the Home assistant base URL
-  * add you "long lived toked"
+  * add your "long lived toked"
   * add the sensor-names to match your installation
 * Run the emulator, note the IP address of the emulator
 * Test in your browser: `http://<emulator-ip>:<port>/api/v1/data` should give a bunch of data
