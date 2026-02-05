@@ -10,8 +10,8 @@ services:
       - "81:80"
     environment:
       FLASK_ENV: production
-      HA_URL: "http://10.0.0.173:8123/api"
-      TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI3ZDYxYWMzZDllNzE0YWNmYmUxYzEyMDdhNzFjOWE3ZiIsImlhdCI6MTc3MDA0MTMxMywiZXhwIjoyMDg1NDAxMzEzfQ.9ZUbyGs8urqQuAYBUxzef_ZxRZZ-lcBBYuPBVTqJcEs"
+      HA_URL: ha_url
+      TOKEN: token
       sensor_active_power_kw: "sensor.electricity_meter_power_consumption"
       sensor_prod_kw: "sensor.electricity_meter_power_production"
       sensor_prod_t1_kwh: "sensor.electricity_meter_energy_production_tarif_1"
@@ -33,3 +33,9 @@ services:
       sensor_timestamp: "sensor.electricity_meter_timestamp"
       sensor_gas_m3: "sensor.gas_meter_gas_consumption"
     restart: unless-stopped
+
+secrets:
+  db_password:
+    file: ./secrets/token.txt
+  ha_url:
+    file: ./secrets/ha_url.txt
