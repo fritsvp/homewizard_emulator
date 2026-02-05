@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  homewizard-emulator:
+    container_name: homewizard_emulator
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "81:80"
+    environment:
+      FLASK_ENV: production
+      HA_URL: "http://10.0.0.173:8123/api"
+      TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI3ZDYxYWMzZDllNzE0YWNmYmUxYzEyMDdhNzFjOWE3ZiIsImlhdCI6MTc3MDA0MTMxMywiZXhwIjoyMDg1NDAxMzEzfQ.9ZUbyGs8urqQuAYBUxzef_ZxRZZ-lcBBYuPBVTqJcEs"
+      sensor_active_power_kw: "sensor.electricity_meter_power_consumption"
+      sensor_prod_kw: "sensor.electricity_meter_power_production"
+      sensor_prod_t1_kwh: "sensor.electricity_meter_energy_production_tarif_1"
+      sensor_prod_t2_kwh: "sensor.electricity_meter_energy_production_tarif_2"
+      sensor_cons_t1_kwh: "sensor.electricity_meter_energy_consumption_tarif_1"
+      sensor_cons_t2_kwh: "sensor.electricity_meter_energy_consumption_tarif_2"
+      sensor_current_l1_a: "sensor.electricity_meter_current_phase_l1"
+      sensor_current_l2_a: "sensor.electricity_meter_current_phase_l2"
+      sensor_current_l3_a: "sensor.electricity_meter_current_phase_l3"
+      sensor_voltage_l1_v: "sensor.electricity_meter_voltage_phase_l1"
+      sensor_voltage_l2_v: "sensor.electricity_meter_voltage_phase_l2"
+      sensor_voltage_l3_v: "sensor.electricity_meter_voltage_phase_l3"
+      sensor_prod_l1_kw: "sensor.electricity_meter_power_production_phase_l1"
+      sensor_prod_l2_kw: "sensor.electricity_meter_power_production_phase_l2"
+      sensor_prod_l3_kw: "sensor.electricity_meter_power_production_phase_l3"
+      sensor_cons_l1_kw: "sensor.electricity_meter_power_consumption_phase_l1"
+      sensor_cons_l2_kw: "sensor.electricity_meter_power_consumption_phase_l2"
+      sensor_cons_l3_kw: "sensor.electricity_meter_power_consumption_phase_l3"
+      sensor_timestamp: "sensor.electricity_meter_timestamp"
+      sensor_gas_m3: "sensor.gas_meter_gas_consumption"
+    restart: unless-stopped
