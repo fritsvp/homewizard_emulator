@@ -53,7 +53,7 @@ def ha_get_state(entity_id):
             attributes = j.get("attributes", {})
             return state, attributes
         else:
-            logger.debug("HA returned %s for %s", r.status_code, entity_id)
+            logger.info("HA returned %s for %s", r.status_code, entity_id)
             return None, {}
     except Exception as e:
         logger.warning("Error fetching %s: %s", entity_id, e)
@@ -184,5 +184,5 @@ def api_data():
 
 
 if __name__ == '__main__':
-    logger.info("Starting HomeWizard P1 emulator on port %s", PORT)
+    logger.info("Starting HW P1 emulator on port %s", PORT)
     app.run(host='0.0.0.0', port=PORT)
