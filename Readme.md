@@ -3,8 +3,9 @@ Use at your own risk!
 Thank you, [Cedriclehousse](https://github.com/Cedriclahousse/homewizard_emulator) for all your code ;-)
 
 # homewizard_emulator
-Some devices, like home EV chargers from Alfen or [Peblar](https://peblar.com/products/ev-charging) can use data from your P1 electricity meter. Some models of [Alfen](https://aceservice.alfen.com/en-us/knowledgebase/article/KA-01252) and Peblar can use this data to slow down the EV charging-process, in order to NOT blowup your house main fuse, when needed. Could be useful, for example when you turn on your electric oven. They can link with [Home Wizard P1 meter](https://duckduckgo.com/?q=home+wizard+p1) for this, but there are several other hardware-solutions that effectively do the same thing: read the P1 data from your smart meter, and use it, somehow, for example in [Home Assistant](https://www.home-assistant.io/). If you have such solution that needs P1 data, and can read it from Homewizard, but your Homeassistant is already getting the P1 data, this emulator can be a solution, or an inspiration.
+Some devices, like home EV chargers from Alfen or [Peblar](https://peblar.com/products/ev-charging) can use data from your [smart electricity meter](https://homey.app/en-us/wiki/what-are-p1-smart-energy-meters/). Some models of [Alfen](https://aceservice.alfen.com/en-us/knowledgebase/article/KA-01252) and Peblar can use this "p1 port" data to slow down the EV charging-process, in order to NOT blowup your house main fuse, when needed. Could be useful, for example when you turn on your electric oven, while charging your EV. They can link with [Home Wizard P1 meter](https://duckduckgo.com/?q=home+wizard+p1) for this, but there are several other hardware-solutions that effectively do the same thing: read the P1 data from your smart meter, and use it, somehow, for example in [Home Assistant](https://www.home-assistant.io/). If you have such solution that needs P1 data, and can read it from Homewizard, but your Homeassistant is already getting the P1 data, this emulator can be a solution, or an inspiration. Or not... fine to me.
 
+# usage
 * grab all the code, and coffee.
 * Edit `docker_compose.yaml`:
   * add the Home assistant base URL in `/secrets/ha_url.txt`
@@ -14,7 +15,20 @@ Some devices, like home EV chargers from Alfen or [Peblar](https://peblar.com/pr
 * Test in your browser: `http://<emulator-ip>:<port>/api/v1/data` should give a bunch of data
   The result looks something like this:
   ```
-  {
+  fixme
+  ```
+  Make sure that you see some data for the voltage to verify, and refresh to see if you see any changes, we don't want outdated data...
+* Point your Alfen/Peblar EV charger (or any other device) to one of the following:
+  * `<emulator-ip>`:`<port>`, possibly in separate fields
+  * just `<emulator-ip>` (the port might be fixed to 80 :-( )
+  * `http://<emulator-ip>:<port>/api/v1/data` or `http://<emulator-ip>/api/v1/data` is you use port 80
+* Fingers crossed
+* Use at your own risk!
+
+# notes
+An original HomeWizard P1 json looks like this, for a single phase installation, DMSR5, with gas:
+```
+{
     "wifi_ssid": "MyAwesomeSSID",
     "wifi_strength": 100,
     "smr_version": 50,
@@ -48,12 +62,5 @@ Some devices, like home EV chargers from Alfen or [Peblar](https://peblar.com/pr
             "unit": "m3"
         }
     ]
-  }
-  ```
-* Point your Alfen/Peblar EV charger (or any other device) to one of the following:
-  * `<emulator-ip>`:`<port>`, possibly in separate fields
-  * just `<emulator-ip>` (the port might be fixed to 80 :-( )
-  * `http://<emulator-ip>:<port>/api/v1/data` or `http://<emulator-ip>/api/v1/data` is you use port 80
-* Fingers crossed
-* Use at your own risk!
-
+}
+```
