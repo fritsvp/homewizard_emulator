@@ -1,13 +1,13 @@
 Use at your own risk!
 
 # homewizard_emulator
-Some devices, like home EV chargers from Alfen or Peblar can use data from your P1 electricity meter. Some models of Alfen and Peblar can use this data to slow down the charging-process, and NOT blowup your house main fuse, when needed. For example when you turn on your electric oven. They can link with Home Wiard P1 meter for this, but there are several other hardware-solutions that effectively do the same thing. If you have such solution, and Homeassistant is getting the P1 data, this emulator can be a solution.
+Some devices, like home EV chargers from Alfen or [Peblar](https://peblar.com/products/ev-charging) can use data from your P1 electricity meter. Some models of [Alfen](https://aceservice.alfen.com/en-us/knowledgebase/article/KA-01252) and Peblar can use this data to slow down the EV charging-process, in order to NOT blowup your house main fuse, when needed. Could be useful, for example when you turn on your electric oven. They can link with [Home Wizard P1 meter](https://duckduckgo.com/?q=home+wizard+p1) for this, but there are several other hardware-solutions that effectively do the same thing: read the P1 data from your smart meter, and use it, somehow, for example in [Home Assistant](https://www.home-assistant.io/). If you have such solution that needs P1 data, and can read it from Homewizard, but your Homeassistant is already getting the P1 data, this emulator can be a solution, or an inspiration.
 
 * Edit `docker_compose.yaml`:
-  * add the Home assistant base URL
-  * add your "long lived toked"
-  * add the sensor-names to match your installation
-* Run the emulator, note the IP address of the emulator
+  * add the Home assistant base URL in `/secrets/ha_url.txt`
+  * add your "long lived toked" in `/sercets/token.txt`
+  * add the sensor-names in `docker-compose.yml` to match your installation
+* Run the emulator: `docker compose up -d`, note the IP address of the emulator
 * Test in your browser: `http://<emulator-ip>:<port>/api/v1/data` should give a bunch of data
   The result looks something like this:
   ```
