@@ -1,7 +1,7 @@
 name: HomeWizard P1 Emulator
 version: "1.0.0"
 slug: homewizard_emulator
-description: "Emuleert een HomeWizard Wi‑Fi P1 API (lokale /api/v1/data) voor Alfen Wallbox load balancing"
+description: "Emuleert een HomeWizard WiFi P1 API (lokale /api/v1/data) voor Alfen Wallbox load balancing"
 arch:
   - amd64
   - armv7
@@ -10,29 +10,29 @@ arch:
 startup: services
 boot: auto
 options:
-  ha_url: "http://supervisor/core/api"
-  token: ""
+  ha_url: "http://10.0.0.173:8123/core/api"
+  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJjYWZiNGEyZWEwZTM0Y2Y5ODc0NTZjNTQ1Yzg1Zjg3OSIsImlhdCI6MTc2OTk2MDQ4OSwiZXhwIjoyMDg1MzIwNDg5fQ.C39eM2KR8RWmZUi3wtSGYpFXEOBw31y1xLzm8sc_GiE"
   port: 80
-  sensor_active_power_kw: "sensor.electricity_meter_huidig_gemiddelde_vraag"
-  sensor_prod_kw: "sensor.electricity_meter_energieproductie"
-  sensor_prod_t1_kwh: "sensor.electricity_meter_energieproductie_tarief_1"
-  sensor_prod_t2_kwh: "sensor.electricity_meter_energieproductie_tarief_2"
-  sensor_cons_t1_kwh: "sensor.electricity_meter_energieverbruik_tarief_1"
-  sensor_cons_t2_kwh: "sensor.electricity_meter_energieverbruik_tarief_2"
-  sensor_current_l1_a: "sensor.electricity_meter_stroom_fase_l1"
-  sensor_current_l2_a: "sensor.electricity_meter_stroom_fase_l2"
-  sensor_current_l3_a: "sensor.electricity_meter_stroom_fase_l3"
-  sensor_voltage_l1_v: "sensor.electricity_meter_spanning_fase_l1"
-  sensor_voltage_l2_v: "sensor.electricity_meter_spanning_fase_l2"
-  sensor_voltage_l3_v: "sensor.electricity_meter_spanning_fase_l3"
-  sensor_prod_l1_kw: "sensor.electricity_meter_energieproductie_fase_l1"
-  sensor_prod_l2_kw: "sensor.electricity_meter_energieproductie_fase_l2"
-  sensor_prod_l3_kw: "sensor.electricity_meter_energieproductie_fase_l3"
-  sensor_cons_l1_kw: "sensor.electricity_meter_energieverbruik_fase_l1"
-  sensor_cons_l2_kw: "sensor.electricity_meter_energieverbruik_fase_l2"
-  sensor_cons_l3_kw: "sensor.electricity_meter_energieverbruik_fase_l3"
-  sensor_timestamp: "sensor.electricity_meter_tijdstip"
-  sensor_gas_m3: "sensor.gas_meter_gasverbruik"
+  sensor_active_power_kw: "sensor.electricity_meter_power_consumption"
+  sensor_prod_kw: "sensor.electricity_meter_power_production"
+  sensor_prod_t1_kwh: "sensor.electricity_meter_energy_production_tarif_1"
+  sensor_prod_t2_kwh: "sensor.electricity_meter_energy_production_tarif_2"
+  sensor_cons_t1_kwh: "sensor.electricity_meter_energy_consumption_tarif_1"
+  sensor_cons_t2_kwh: "sensor.electricity_meter_energy_consumption_tarif_2"
+  sensor_current_l1_a: "sensor.electricity_meter_current_phase_l1"
+  sensor_current_l2_a: "sensor.electricity_meter_current_phase_l2"
+  sensor_current_l3_a: "sensor.electricity_meter_current_phase_l3"
+  sensor_voltage_l1_v: "sensor.electricity_meter_voltage_phase_l1"
+  sensor_voltage_l2_v: "sensor.electricity_meter_voltage_phase_l2"
+  sensor_voltage_l3_v: "sensor.electricity_meter_voltage_phase_l3"
+  sensor_prod_l1_kw: "sensor.electricity_meter_power_production_phase_l1"
+  sensor_prod_l2_kw: "sensor.electricity_meter_power_production_phase_l2"
+  sensor_prod_l3_kw: "sensor.electricity_meter_power_production_phase_l3"
+  sensor_cons_l1_kw: "sensor.electricity_meter_power_consumption_phase_l1"
+  sensor_cons_l2_kw: "sensor.electricity_meter_power_consumption_phase_l2"
+  sensor_cons_l3_kw: "sensor.electricity_meter_power_consumption_phase_l3"
+  sensor_timestamp: "sensor.electricity_meter_timestamp"
+  sensor_gas_m3: "sensor.gas_meter_gas_consumption"
 schema:
   ha_url: str
   token: str
