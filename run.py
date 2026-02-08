@@ -194,7 +194,7 @@ def api_data():
 
     # include gas when available
     if gas_m3:
-        resp["gas_meter_m3"] = round(gas_m3, 6)
+        resp["total_gas_m3"] = round(gas_m3, 6)
 
     return jsonify(resp)
 
