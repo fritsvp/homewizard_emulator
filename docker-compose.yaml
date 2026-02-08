@@ -7,11 +7,11 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "81:80"
+      - "80:80"
     environment:
       FLASK_ENV: production
-      HA_URL: ha_url
-      TOKEN: token
+#      HA_URL: "http://10.x.y.z/api" or pass via a secret, see below
+#      TOKEN: "M3GaS3CrEt-H0m3Ass1stant-t0k3n" rather passed as asecret, see below
       sensor_active_power_kw: "sensor.electricity_meter_power_consumption"
       sensor_prod_kw: "sensor.electricity_meter_power_production"
       sensor_prod_t1_kwh: "sensor.electricity_meter_energy_production_tarif_1"
@@ -31,11 +31,14 @@ services:
       sensor_cons_l2_kw: "sensor.electricity_meter_power_consumption_phase_l2"
       sensor_cons_l3_kw: "sensor.electricity_meter_power_consumption_phase_l3"
       sensor_timestamp: "sensor.electricity_meter_timestamp"
-      sensor_gas_m3: "sensor.gas_meter_gas_consumption"
+#      sensor_gas_m3: "sensor.gas_meter_gas_consumption"
     restart: unless-stopped
+    secrets:
+      - token
+      - ha_url
 
 secrets:
-  db_password:
+  token:
     file: ./secrets/token.txt
   ha_url:
     file: ./secrets/ha_url.txt

@@ -10,8 +10,24 @@ logger = logging.getLogger("homewizard_emulator")
 
 app = Flask(__name__)
 
-HA_URL = os.getenv("HA_URL") or os.environ.get("HA_URL") or os.getenv("OPTION_HA_URL") or "http://supervisor/core/api"
-TOKEN = os.getenv("TOKEN") or os.environ.get("TOKEN") or os.getenv("OPTION_TOKEN") or os.environ.get("HASS_TOKEN")
+# Access HA_URL, when set as secret:
+try:
+    with open('/run/secrets/ha_url', 'r') as file:
+        HA_URL = file.read().strip()  # The actual content from the file
+        logger.info("Home Assistant URL loaded: %s", HA_URL)
+except FileNotFoundError:
+    logger.info("Home Assistant URL not passed as a secret, trying plan B...")
+    HA_URL = os.getenv("HA_URL") or os.environ.get("HA_URL") or os.getenv("OPTION_HA_URL") or "http://supervisor/core/api"
+
+try:
+    with open('/run/secrets/token', 'r') as file:
+        TOKEN = file.read().strip()  # The actual content from the file
+        logger.info("Home Assistant TOKEN loaded, not logger here :-)")
+except FileNotFoundError:
+    logger.info("Home Assistant TOKEN not passed as a secret, trying plan B...")
+    TOKEN = os.getenv("TOKEN") or os.environ.get("TOKEN") or os.getenv("OPTION_TOKEN") or os.environ.get("HASS_TOKEN")
+
+
 PORT = int(os.getenv("PORT") or os.environ.get("PORT") or os.environ.get("OPTION_PORT") or 80)
 
 # Helper: read option env var names used by HA addon - supervisor passes options as OPTION_xxx
