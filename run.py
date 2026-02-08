@@ -53,6 +53,7 @@ SENSOR_PROD_L3 = opt("sensor_prod_l3_kw", "sensor.electricity_meter_energieprodu
 SENSOR_CONS_L1 = opt("sensor_cons_l1_kw", "sensor.electricity_meter_energieverbruik_fase_l1")
 SENSOR_CONS_L2 = opt("sensor_cons_l2_kw", "sensor.electricity_meter_energieverbruik_fase_l2")
 SENSOR_CONS_L3 = opt("sensor_cons_l3_kw", "sensor.electricity_meter_energieverbruik_fase_l3")
+SENSOR_ACTIVE_TARIFF = opt("sensor_active_tariff", "sensor.electricity_meter_active_tariff")
 SENSOR_TIMESTAMP = opt("sensor_timestamp", "sensor.electricity_meter_tijdstip")
 SENSOR_GAS = opt("sensor_gas_m3", "sensor.gas_meter_gasverbruik")
 
@@ -76,23 +77,38 @@ def ha_get_state(entity_id):
         return None, {}
 
 
-def to_float(v):
+def to_smooth(v):
+    #some smoothing of the  values:
     if v is None:
         return 0.0
     try:
         return float(v)
     except Exception:
-        # some sensors give strings like 'low' for tariff. treat non-numeric as 0
+        # tariff can be "low" should be "1"
+        # tariff can be "normal" should be "0"
+        if (v == "low"):
+            return 1
+        if (v == "normal"):
+            return 0
+        # anything else: return 0.0, lol
         return 0.0
 
 
 def get_numeric(entity_id):
     state, attrs = ha_get_state(entity_id)
-    return to_float(state)
+    return to_smooth(state)
 
 
 @app.route("/api/v1/data", methods=["GET"])
 def api_data():
+    # read active tariff (high/low, 0/1)
+#    ts_state, ts_attrs = ha_get_state(SENSOR_ACTIVE_TARIFF)
+#    if (ts_state == "low"):
+#        active_tariff = 1
+#    else:
+#        active_tariff = 0
+    active_tariff = get_numeric(SENSOR_ACTIVE_TARIFF)
+
     # Read per-phase current & voltage
     cur_l1 = get_numeric(SENSOR_CUR_L1)
     cur_l2 = get_numeric(SENSOR_CUR_L2)
@@ -177,6 +193,7 @@ def api_data():
         "smr_version": 50,
         "meter_model": "DSMR-50",
         "unique_id": "ha_emulator",
+        "active_tariff" : active_tariff,
         "active_power_w": active_power_w,
         "active_power_l1_w": active_power_l1_w,
         "active_power_l2_w": active_power_l2_w,

@@ -31,6 +31,7 @@ services:
       sensor_cons_l2_kw: "sensor.electricity_meter_power_consumption_phase_l2"
       sensor_cons_l3_kw: "sensor.electricity_meter_power_consumption_phase_l3"
       sensor_timestamp: "sensor.electricity_meter_timestamp"
+      sensor_active_tariff: "sensor.electricity_meter_active_tariff"
 #      sensor_gas_m3: "sensor.gas_meter_gas_consumption"
     restart: unless-stopped
     secrets:
