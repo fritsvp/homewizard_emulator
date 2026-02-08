@@ -112,6 +112,7 @@ def api_data():
     # Total instantaneous power: prefer configured active power sensor (kW) else calc from phases
     active_power_kw = get_numeric(SENSOR_ACTIVE_POWER_KW)
     if active_power_kw == 0.0:
+        logger.warning("Falling back to local calculation for active_power_w")
         # try compute from phase currents & voltages
         p_l1 = cur_l1 * volt_l1
         p_l2 = cur_l2 * volt_l2
@@ -122,16 +123,19 @@ def api_data():
 
     # If per-phase kW production/consumption sensors exist, use those to compute per-phase W
     if any([prod_l1_kw, prod_l2_kw, prod_l3_kw]) or any([cons_l1_kw, cons_l2_kw, cons_l3_kw]):
-        # prefer production - consumption for each phase if available
-        ap_l1 = (prod_l1_kw - cons_l1_kw) * 1000.0
-        ap_l2 = (prod_l2_kw - cons_l2_kw) * 1000.0
-        ap_l3 = (prod_l3_kw - cons_l3_kw) * 1000.0
+        # prefer consumption - production for each phase if available
+        ap_l1 = (cons_l1_kw - prod_l1_kw) * 1000.0
+        ap_l2 = (cons_l2_kw - prod_l2_kw) * 1000.0
+        ap_l3 = (cons_l3_kw - prod_l3_kw) * 1000.0
         # If zeros, fall back to current*voltage
         if ap_l1 == 0 and cur_l1 and volt_l1:
+            logger.warning("Falling back to local calculation for active_power_l1_w")
             ap_l1 = cur_l1 * volt_l1
         if ap_l2 == 0 and cur_l2 and volt_l2:
+            logger.warning("Falling back to local calculation for active_power_l2_w")
             ap_l2 = cur_l2 * volt_l2
         if ap_l3 == 0 and cur_l3 and volt_l3:
+            logger.warning("Falling back to local calculation for active_power_l3_w")
             ap_l3 = cur_l3 * volt_l3
         active_power_l1_w = round(ap_l1, 3)
         active_power_l2_w = round(ap_l2, 3)
@@ -158,11 +162,11 @@ def api_data():
         try:
             # if it's already ISO or datetime-like, accept
             dt = dateparser.parse(ts_state)
-            timestamp = dt.astimezone(timezone.utc).isoformat()
+            timestamp = dt.astimezone(timezone.utc).strftime("%y%m%d%H%M%S")
         except Exception:
             timestamp = None
     if not timestamp:
-        timestamp = datetime.now(timezone.utc).isoformat()
+        timestamp = datetime.now(timezone.utc).strftime("%y%m%d%H%M%S")
 
     # gas
     gas_m3 = get_numeric(SENSOR_GAS)
@@ -189,12 +193,12 @@ def api_data():
         "total_power_export_kwh": total_export_kwh,
         "total_power_export_t1_kwh": round(prod_t1, 6),
         "total_power_export_t2_kwh": round(prod_t2, 6),
-        "timestamp": timestamp
     }
 
     # include gas when available
     if gas_m3:
         resp["total_gas_m3"] = round(gas_m3, 6)
+        resp["gas_timestamp"] = timestamp
 
     return jsonify(resp)
 
