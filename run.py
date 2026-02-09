@@ -11,12 +11,10 @@ import socket
 import threading
 
 
-
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger("homewizard_emulator")
 
 app = Flask(__name__)
-
 
 
 # Access HA_URL, when set as secret:
@@ -37,11 +35,15 @@ except FileNotFoundError:
     TOKEN = os.getenv("TOKEN") or os.environ.get("TOKEN") or os.getenv("OPTION_TOKEN") or os.environ.get("HASS_TOKEN")
 
 
-PORT = int(os.getenv("PORT") or os.environ.get("PORT") or os.environ.get("OPTION_PORT") or 80)
 
 # Helper: read option env var names used by HA addon - supervisor passes options as OPTION_xxx
+# Note: this project can likely also be published as an add-on in HA? Dunno... future thoughts...
 def opt(name, default=None):
     return os.getenv(name.upper()) or os.getenv(f"OPTION_{name.upper()}") or os.getenv(name) or default
+
+
+PORT = int(opt("port") or os.getenv("PORT") or os.environ.get("PORT") or os.environ.get("OPTION_PORT") or 80)
+#PORT = int(os.getenv("PORT") or os.environ.get("PORT") or os.environ.get("OPTION_PORT") or 80)
 
 # Configurable entity ids (please set in docker-compose.yaml)
 SENSOR_ACTIVE_POWER_KW = opt("sensor_active_power_kw", "sensor.electricity_meter_huidig_gemiddelde_vraag")
@@ -73,16 +75,22 @@ HEADERS = {"Authorization": f"Bearer {TOKEN}", "Content-Type": "application/json
 def register_service():
     zeroconf = Zeroconf()
 
-    # Define service parameters for v1 api
     service_type = "_hwenergy._tcp.local."
-    service_name = "p1meter-334455._hwenergy._tcp.local."
+#You could try the following values, when needed, they are "more realistic", but I prefer showing the emulator where possible
+#    service_descr = "P1 Meter"
+#    service_name = "p1meter-334455._hwenergy._tcp.local."
+#    service_mac = "aabbcc334455"
+    service_descr = "HomeWizard Emulator"
+    service_name = "p1meter-emulator._hwenergy._tcp.local."
+    service_mac = "hw-emulator"
+    service_ip = opt("ip", "127.0.0.1") #use dummy ip. probably not used anyway...
     service_port = PORT
-    service_properties = {"path": "/api/v1", "api_enabled": 1, "product_name": "P1 Meter", "serial": "aabbcc334455", "product_type": "HWE-P1"}
+    service_properties = {"product_name": service_descr, "serial": service_mac, "product_type": "HWE-P1", "path": "/api/v1", "api_enabled": 1}
 
     v1api = ServiceInfo(
         service_type,
         service_name,
-        addresses=[socket.inet_aton("10.0.0.173")],  # Change to your device's IP
+        addresses=[socket.inet_aton(service_ip)],
         port=service_port,
         properties=service_properties,
         server="p1meter-334455.local."
@@ -132,14 +140,7 @@ def get_numeric(entity_id):
 
 @app.route("/api/v1/data", methods=["GET"])
 def api_data():
-    # read active tariff (high/low, 0/1)
-#    ts_state, ts_attrs = ha_get_state(SENSOR_ACTIVE_TARIFF)
-#    if (ts_state == "low"):
-#        active_tariff = 1
-#    else:
-#        active_tariff = 0
     active_tariff = get_numeric(SENSOR_ACTIVE_TARIFF)
-
     # Read per-phase current & voltage
     cur_l1 = get_numeric(SENSOR_CUR_L1)
     cur_l2 = get_numeric(SENSOR_CUR_L2)
@@ -147,7 +148,6 @@ def api_data():
     volt_l1 = get_numeric(SENSOR_VOLT_L1)
     volt_l2 = get_numeric(SENSOR_VOLT_L2)
     volt_l3 = get_numeric(SENSOR_VOLT_L3)
-
     # Attempt direct per-phase power from phase kW sensors (if present)
     prod_l1_kw = get_numeric(SENSOR_PROD_L1)
     prod_l2_kw = get_numeric(SENSOR_PROD_L2)
@@ -255,6 +255,7 @@ if __name__ == '__main__':
     if opt("add_zeroconf", False):
         logger.info("Starting zeroconf/mDNS, for discovery")
         threading.Thread(target=register_service, daemon=True).start()
-    logger.info("NOT Starting zeroconf/mDNS, set add_zeroconf to true in your docker compose if you need it")
+    else:
+        logger.info("NOT Starting zeroconf/mDNS, set add_zeroconf to true in your docker compose if you need it")
     logger.info("Starting HW P1 emulator on port %s", PORT)
     app.run(host='0.0.0.0', port=PORT)

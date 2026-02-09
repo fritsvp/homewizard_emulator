@@ -12,6 +12,8 @@ services:
     environment:
       FLASK_ENV: production
       add_zeroconf: True #Set to False if you don;t need autodiscovery via mDNS
+#      port: 80 #Can try another port, but some devices might ignore it, like Peblar
+#      ip: "192.168.0.123" #Might be needed by some devices, others might ignore this one
       sensor_active_power_kw: "sensor.electricity_meter_power_consumption"
       sensor_prod_kw: "sensor.electricity_meter_power_production"
       sensor_prod_t1_kwh: "sensor.electricity_meter_energy_production_tarif_1"
