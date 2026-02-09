@@ -15,7 +15,30 @@ Some devices, like home EV chargers from Alfen or [Peblar](https://peblar.com/pr
 * Test in your browser: `http://<emulator-ip>:<port>/api/v1/data` should give a bunch of data
   The result looks something like this:
   ```
-  fixme
+  {
+   "active_current_l1_a": 2,
+   "active_current_l2_a": 0,
+   "active_current_l3_a": 0,
+   "active_power_l1_w": 349,
+   "active_power_l2_w": 7,
+   "active_power_l3_w": 34,
+   "active_power_w": 391,
+   "active_tariff": 1,
+   "active_voltage_l1_v": 228,
+   "active_voltage_l2_v": 229,
+   "active_voltage_l3_v": 230,
+   "meter_model": "DSMR-50",
+   "smr_version": 50,
+   "total_power_export_kwh": 334.152,
+   "total_power_export_t1_kwh": 222.437,
+   "total_power_export_t2_kwh": 111.715,
+   "total_power_import_kwh": 4445.373,
+   "total_power_import_t1_kwh": 3333.567,
+   "total_power_import_t2_kwh": 1111.806,
+   "unique_id": "ha_emulator",
+   "wifi_ssid": "HA-Emulator",
+   "wifi_strength": 100
+  }
   ```
   Make sure that you see some data for the voltage to verify, and refresh to see if you see any changes, we don't want outdated data...
 * Point your Alfen/Peblar EV charger (or any other device) to one of the following:
@@ -26,41 +49,9 @@ Some devices, like home EV chargers from Alfen or [Peblar](https://peblar.com/pr
 * Use at your own risk!
 
 # notes
-An original HomeWizard P1 json looks like this, for a single phase installation, DMSR5, with gas:
-```
-{
-    "wifi_ssid": "MyAwesomeSSID",
-    "wifi_strength": 100,
-    "smr_version": 50,
-    "meter_model": "FOOBAR-METER",
-    "unique_id": "1234567891234567891234567891234567",
-    "active_tariff": 2,
-    "total_power_import_kwh": 333.333,
-    "total_power_import_t1_kwh": 222.222,
-    "total_power_import_t2_kwh": 111.111,
-    "total_power_export_kwh": 0,
-    "total_power_export_t1_kwh": 0,
-    "total_power_export_t2_kwh": 0,
-    "active_power_w": 214,
-    "active_power_l1_w": 212,
-    "active_voltage_l1_v": 232,
-    "active_current_a": 0.914,
-    "active_current_l1_a": 0.914,
-    "voltage_sag_l1_count": 5,
-    "voltage_swell_l1_count": 5,
-    "any_power_fail_count": 5,
-    "long_power_fail_count": 1,
-    "total_gas_m3": 123.456,
-    "gas_timestamp": 260203105000,
-    "gas_unique_id": "9876543219876543219876543219876543",
-    "external": [
-        {
-            "unique_id": "9876543219876543219876543219876543",
-            "type": "gas_meter",
-            "timestamp": 260203105000,
-            "value": 123.456,
-            "unit": "m3"
-        }
-    ]
-}
-```
+Alfen EV charger allows running the emulator without zeroconf, and on your own favorite port (not 80)
+Peblar EV charger ignores both port and IP-address, forcing the emulator to use port 80.
+
+Both chargers use api v1, hence the emulator only offers v1.
+
+Tested with Peblar, but use at your own risk!
