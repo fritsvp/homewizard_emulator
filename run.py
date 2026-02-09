@@ -11,7 +11,7 @@ import socket
 import threading
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger("homewizard_emulator")
 
 app = Flask(__name__)
