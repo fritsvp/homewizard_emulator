@@ -8,6 +8,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "80:80"
+      - "5353:5353/UDP"
+    network_mode: "host"
     environment:
       FLASK_ENV: production
 #      HA_URL: "http://10.x.y.z/api" or pass via a secret, see below
