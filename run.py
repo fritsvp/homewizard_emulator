@@ -18,26 +18,6 @@ logger = logging.getLogger("homewizard_emulator")
 app = Flask(__name__)
 
 
-# Register mDNS service function
-def register_service():
-    zeroconf = Zeroconf()
-
-    # Define service parameters for v1 api
-    service_type = "_hwenergy._tcp.local."
-    service_name = "p1meter-334455._hwenergy._tcp.local."
-    service_port = 80
-    service_properties = {"path": "/api/v1", "api_enabled": 1, "product_name": "P1 Meter", "serial": "aabbcc334455", "product_type": "HWE-P1"}
-
-    v1api = ServiceInfo(
-        service_type,
-        service_name,
-        addresses=[socket.inet_aton("10.0.0.173")],  # Change to your device's IP
-        port=service_port,
-        properties=service_properties,
-        server="p1meter-334455.local."
-    )
-    zeroconf.register_service(v1api)
-
 
 # Access HA_URL, when set as secret:
 try:
@@ -87,6 +67,28 @@ SENSOR_TIMESTAMP = opt("sensor_timestamp", "sensor.electricity_meter_tijdstip")
 SENSOR_GAS = opt("sensor_gas_m3", "sensor.gas_meter_gasverbruik")
 
 HEADERS = {"Authorization": f"Bearer {TOKEN}", "Content-Type": "application/json"} if TOKEN else {"Content-Type": "application/json"}
+
+
+# Register mDNS service function
+def register_service():
+    zeroconf = Zeroconf()
+
+    # Define service parameters for v1 api
+    service_type = "_hwenergy._tcp.local."
+    service_name = "p1meter-334455._hwenergy._tcp.local."
+    service_port = PORT
+    service_properties = {"path": "/api/v1", "api_enabled": 1, "product_name": "P1 Meter", "serial": "aabbcc334455", "product_type": "HWE-P1"}
+
+    v1api = ServiceInfo(
+        service_type,
+        service_name,
+        addresses=[socket.inet_aton("10.0.0.173")],  # Change to your device's IP
+        port=service_port,
+        properties=service_properties,
+        server="p1meter-334455.local."
+    )
+    zeroconf.register_service(v1api)
+
 
 
 def ha_get_state(entity_id):
@@ -250,7 +252,9 @@ def api_data():
 
 
 if __name__ == '__main__':
-    logger.info("Starting mDNS, for discovery")
-    threading.Thread(target=register_service, daemon=True).start()
+    if opt("add_zeroconf", False):
+        logger.info("Starting zeroconf/mDNS, for discovery")
+        threading.Thread(target=register_service, daemon=True).start()
+    logger.info("NOT Starting zeroconf/mDNS, set add_zeroconf to true in your docker compose if you need it")
     logger.info("Starting HW P1 emulator on port %s", PORT)
     app.run(host='0.0.0.0', port=PORT)

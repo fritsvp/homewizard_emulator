@@ -8,12 +8,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "80:80"
-      - "5353:5353/UDP"
-    network_mode: "host"
+    network_mode: "host" #Only needed incombination with zeroconf
     environment:
       FLASK_ENV: production
-#      HA_URL: "http://10.x.y.z/api" or pass via a secret, see below
-#      TOKEN: "M3GaS3CrEt-H0m3Ass1stant-t0k3n" rather passed as asecret, see below
+      add_zeroconf: True #Set to False if you don;t need autodiscovery via mDNS
       sensor_active_power_kw: "sensor.electricity_meter_power_consumption"
       sensor_prod_kw: "sensor.electricity_meter_power_production"
       sensor_prod_t1_kwh: "sensor.electricity_meter_energy_production_tarif_1"
