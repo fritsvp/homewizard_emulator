@@ -5,10 +5,39 @@ import logging
 from dateutil import parser as dateparser
 from datetime import datetime, timezone
 
+#for the mDNS:
+from zeroconf import Zeroconf, ServiceInfo
+import socket
+import threading
+
+
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("homewizard_emulator")
 
 app = Flask(__name__)
+
+
+# Register mDNS service function
+def register_service():
+    zeroconf = Zeroconf()
+
+    # Define service parameters for v1 api
+    service_type = "_hwenergy._tcp.local."
+    service_name = "p1meter-334455._hwenergy._tcp.local."
+    service_port = 80
+    service_properties = {"path": "/api/v1", "api_enabled": 1, "product_name": "P1 Meter", "serial": "aabbcc334455", "product_type": "HWE-P1"}
+
+    v1api = ServiceInfo(
+        service_type,
+        service_name,
+        addresses=[socket.inet_aton("10.0.0.173")],  # Change to your device's IP
+        port=service_port,
+        properties=service_properties,
+        server="p1meter-334455.local."
+    )
+    zeroconf.register_service(v1api)
+
 
 # Access HA_URL, when set as secret:
 try:
@@ -22,7 +51,7 @@ except FileNotFoundError:
 try:
     with open('/run/secrets/token', 'r') as file:
         TOKEN = file.read().strip()  # The actual content from the file
-        logger.info("Home Assistant TOKEN loaded, not logger here :-)")
+        logger.info("Home Assistant TOKEN loaded, not logging it here :-)")
 except FileNotFoundError:
     logger.info("Home Assistant TOKEN not passed as a secret, trying plan B...")
     TOKEN = os.getenv("TOKEN") or os.environ.get("TOKEN") or os.getenv("OPTION_TOKEN") or os.environ.get("HASS_TOKEN")
@@ -34,7 +63,7 @@ PORT = int(os.getenv("PORT") or os.environ.get("PORT") or os.environ.get("OPTION
 def opt(name, default=None):
     return os.getenv(name.upper()) or os.getenv(f"OPTION_{name.upper()}") or os.getenv(name) or default
 
-# Configurable entity ids (defaults set in config.yaml)
+# Configurable entity ids (please set in docker-compose.yaml)
 SENSOR_ACTIVE_POWER_KW = opt("sensor_active_power_kw", "sensor.electricity_meter_huidig_gemiddelde_vraag")
 SENSOR_PROD_KW = opt("sensor_prod_kw", "sensor.electricity_meter_energieproductie")
 SENSOR_PROD_T1 = opt("sensor_prod_t1_kwh", "sensor.electricity_meter_energieproductie_tarief_1")
@@ -85,11 +114,11 @@ def to_smooth(v):
         return float(v)
     except Exception:
         # tariff can be "low" should be "1"
-        # tariff can be "normal" should be "0"
+        # tariff can be "normal" should be "2"
         if (v == "low"):
             return 1
         if (v == "normal"):
-            return 0
+            return 2
         # anything else: return 0.0, lol
         return 0.0
 
@@ -221,5 +250,7 @@ def api_data():
 
 
 if __name__ == '__main__':
+    logger.info("Starting mDNS, for discovery")
+    threading.Thread(target=register_service, daemon=True).start()
     logger.info("Starting HW P1 emulator on port %s", PORT)
     app.run(host='0.0.0.0', port=PORT)
